@@ -40,6 +40,14 @@ vault write /kubernetes/config \
   disable_local_ca_jwt="true"
 ```
 
+```
+vault write /kubernetes/config \
+  kubernetes_host="https://server.dev.k8s-cluster.shipyard.run:32514" \
+  service_account_jwt="$(kubectl get secrets -n vault vault-secret -o json | jq -r .data.token | base64 -d)" \
+  kubernetes_ca_cert="$(kubectl get secrets -n vault vault-secret -o json | jq -r '.data."ca.crt"' | base64 -d)" \
+  disable_local_ca_jwt="true"
+```
+
 ## Add the CA to a Vault secret
 
 ```shell

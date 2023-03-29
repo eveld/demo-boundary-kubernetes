@@ -46,7 +46,7 @@ VAULT_TOKEN="$(vault token create -period=30m -format=json -orphan=true -policy=
 ```shell
 boundary credential-stores create vault \
   -scope-id "p_f0Aa554tqQ" \
-  -recovery-config /boundary/config/boundary_server.hcl \
+  -recovery-config ./config/boundary_server.hcl \
   -vault-address "http://vault.container.shipyard.run:8200" \
   -vault-token "$(vault token create -period=30m -format=json -orphan=true -policy=boundary-controller -policy=kubernetes-auth -no-default-policy=true -renewable=true | jq -r .auth.client_token)"
 ```
@@ -67,7 +67,7 @@ First the dynamic access credentials
 ```shell
 boundary credential-libraries create vault \
     -credential-store-id csvlt_keXno6UqCe \
-    -recovery-config /boundary/config/boundary_server.hcl \
+    -recovery-config ./config/boundary_server.hcl \
     -vault-path "kubernetes/creds/my-role" \
     -vault-http-method="POST" \
     -vault-http-request-body="{\"kubernetes_namespace\": \"vault\",\"ttl\": \"1h\"}" \
@@ -90,7 +90,7 @@ Then the ca
 ```shell
 boundary credential-libraries create vault \
     -credential-store-id csvlt_keXno6UqCe \
-    -recovery-config /boundary/config/boundary_server.hcl \
+    -recovery-config ./config/boundary_server.hcl \
     -vault-path "secret/data/kubernetes" \
     -name "kubernetes vault ca"
 ```
@@ -110,11 +110,21 @@ Credential Library information:
 
 ```shell
 boundary targets create tcp \
-   -recovery-config /boundary/config/boundary_server.hcl \
+   -recovery-config ./config/boundary_server.hcl \
    -name="kubernetes" \
    -description="Access to the Kubernetes API" \
    -default-port="$(kubectl config view --minify -o 'jsonpath={.clusters[].cluster.server}' | sed 's/https:\/\/\(.*\):\(.*\)/\2/')" \
    -address="$(kubectl config view --minify -o 'jsonpath={.clusters[].cluster.server}' | sed 's/https:\/\/\(.*\):\(.*\)/\1/')" \
+   -scope-id=p_f0Aa554tqQ
+```
+
+```
+  boundary targets create tcp \
+   -recovery-config ./config/boundary_server.hcl \
+   -name="kubernetes" \
+   -description="Access to the Kubernetes API" \
+   -address="server.dev.k8s-cluster.shipyard.run" \
+   -default-port="32514" \
    -scope-id=p_f0Aa554tqQ
 ```
 
@@ -136,7 +146,7 @@ Target information:
 
 ```shell
 boundary targets add-credential-sources \
-  -recovery-config /boundary/config/boundary_server.hcl \
+  -recovery-config ./config/boundary_server.hcl \
   -id=ttcp_FZ2bhOwmle \
   -application-credential-source=clvlt_KwmY5lhNX0
 ```
@@ -158,7 +168,7 @@ Target information:
 
 ```shell
 boundary targets add-credential-sources \
-  -recovery-config /boundary/config/boundary_server.hcl \
+  -recovery-config ./config/boundary_server.hcl \
   -id=ttcp_FZ2bhOwmle \
   -application-credential-source=clvlt_vOxnF0iBlW
 ```
@@ -194,7 +204,6 @@ export BOUNDARY_TOKEN=$(cat .boundary_token)
 
 ```shell
 boundary targets authorize-session \
-  -token env://BOUNDARY_TOKEN \
   -id ttcp_FZ2bhOwmle \
   -format json > .session_token
 
@@ -206,7 +215,6 @@ Connect to kube
 
 ```shell
 boundary connect kube \
-  -token env://BOUNDARY_TOKEN \
   -target-id=ttcp_FZ2bhOwmle \
   -- --token="$(cat .kube_token)" --certificate-authority=".kube_ca" get pods -n vault
 

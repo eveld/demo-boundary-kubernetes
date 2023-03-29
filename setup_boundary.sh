@@ -53,7 +53,6 @@ boundary roles add-grants \
 boundary roles add-principals \
   -id ${anon_listing_role} \
   -recovery-config ./config/boundary_server.hcl \
-  -recovery-config /boundary/config/boundary_server.hcl \
   -principal 'u_anon'
 
 org_listing_role=$(boundary roles create -name 'org_anon_listing' \

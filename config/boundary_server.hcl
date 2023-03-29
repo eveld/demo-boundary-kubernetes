@@ -50,6 +50,7 @@ kms "aead" {
 worker {
   name = "server-worker"
   auth_storage_path = "/boundary/worker"
+  public_addr = "boundary.container.shipyard.run"
 
   tags {
     type = ["worker"]
