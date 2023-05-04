@@ -21,7 +21,7 @@ controller {
   description = "An example controller"
 
   database {
-    url = "postgresql://postgres:postgres@boundary-db.container.shipyard.run:5432/boundary?sslmode=disable"
+    url = "postgresql://postgres:postgres@postgres.container.shipyard.run:5432/boundary?sslmode=disable"
     max_open_connections = 5
   }
 }

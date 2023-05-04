@@ -1,6 +1,7 @@
 container "vm" {
   network {
     name = "network.local"
+    ip_address = "10.0.0.100"
   }
 
   image {
@@ -18,7 +19,6 @@ container "vm" {
   }
 
   port {
-    host   = 2222
     local  = 22
     remote = 22
   }

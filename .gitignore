@@ -2,3 +2,7 @@
 .kube_ca
 .session_token
 .kube_token
+.vscode
+.envrc
+.terraform
+*.tfstate*
